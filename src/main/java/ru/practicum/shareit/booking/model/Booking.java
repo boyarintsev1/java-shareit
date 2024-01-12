@@ -1,14 +1,16 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.booking.model;
 
+import lombok.Data;
 import ru.practicum.shareit.booking.enums.BookingStatus;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * Класс BookingDto ("заказ") содержит описание заказа Booking, которое будет возвращено пользователю. Поля:
+ * Класс Booking содержит информацию о бронировании (booking) и содержит следующие поля:
  * id — уникальный идентификатор бронирования;
  * start — дата и время начала бронирования;
  * end — дата и время конца бронирования;
@@ -19,13 +21,25 @@ import java.time.LocalDateTime;
  * REJECTED — бронирование отклонено владельцем, CANCELED — бронирование отменено создателем
  */
 
-public class BookingDto extends Booking {
-    public BookingDto(Long id,
-                      LocalDateTime start,
-                      LocalDateTime end,
-                      Item item,
-                      User booker,
-                      BookingStatus status) {
-        super(id, start, end, item, booker, status);
+@Data
+public class Booking {
+    private Long id;
+    @NotNull
+    @FutureOrPresent(message = "Дата бронирования не может быть из прошлого")
+    private LocalDateTime start;
+    @NotNull
+    @FutureOrPresent(message = "Дата бронирования не может быть из прошлого")
+    private LocalDateTime end;
+    private Item item;
+    private User booker;
+    private BookingStatus status;
+
+    public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus status) {
+        this.id = id;
+        this.start = start;
+        this.end = end;
+        this.item = item;
+        this.booker = booker;
+        this.status = status;
     }
 }
