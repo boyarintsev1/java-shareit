@@ -9,8 +9,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Класс-контроллер по Item
@@ -19,9 +19,6 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final List<ItemDto>  itemDtoList = new ArrayList<>();
-
-    private final List<ItemDto> itemsOfUser = new ArrayList<>();
 
     @Autowired
     public ItemController(@Qualifier(value = "inMemoryItemService") ItemService itemService) {
@@ -33,11 +30,10 @@ public class ItemController {
      */
     @GetMapping
     public List<ItemDto> findAllItems(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        itemsOfUser.clear();
-        for (Item i: itemService.findAllItems(userId)) {
-            itemsOfUser.add(ItemMapper.toItemDto(i));
-        }
-        return itemsOfUser;
+        return itemService.findAllItems(userId)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -53,11 +49,10 @@ public class ItemController {
      */
     @GetMapping("/search")
     public List<ItemDto> findItem(@RequestParam(value = "text") String text) {
-        itemDtoList.clear();
-        for (Item i: itemService.findItem(text)) {
-            itemDtoList.add(ItemMapper.toItemDto(i));
-        }
-        return itemDtoList;
+        return itemService.findItem(text)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -65,7 +60,7 @@ public class ItemController {
      */
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                           @Valid @RequestBody Item item) {
+                              @Valid @RequestBody Item item) {
         return ItemMapper.toItemDto(itemService.createItem(userId, item));
     }
 
@@ -74,7 +69,7 @@ public class ItemController {
      */
     @PatchMapping("/{id}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId, @PathVariable("id") Long itemId,
-                           @RequestBody Item item) {
+                              @RequestBody Item item) {
         return ItemMapper.toItemDto(itemService.updateItem(userId, itemId, item));
     }
 

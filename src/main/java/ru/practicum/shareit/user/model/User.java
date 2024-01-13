@@ -8,19 +8,22 @@ import lombok.EqualsAndHashCode;
 import javax.validation.constraints.*;
 
 /**
- * Класс User содержит информацию о пользователях (user). Всего три поля:
- * id — уникальный идентификатор пользователя;
- * name — имя или логин пользователя;
- * email — адрес электронной почты (учтите, что два пользователя не могут иметь одинаковый адрес электронной почты).
+ * Класс User содержит информацию о пользователях (user).
  */
 
 @Data
 @JsonPropertyOrder({"id", "name", "email"})
 public class User {
 
+    /**
+     * id — уникальный идентификатор пользователя;
+     */
     @EqualsAndHashCode.Exclude
     private Integer id;
 
+    /**
+     * name — имя или логин пользователя;
+     */
     @NotNull(message = "Значение поля Name не может быть пустым")
     @NotEmpty(message = "Значение поля Name не может быть пустым")
     @NotBlank(message = "Значение поля Name не может быть пустым")
@@ -29,6 +32,9 @@ public class User {
             = "Имя пользователя должно быть длиной от 1 до 30 символов")
     private String name;
 
+    /**
+     * email — адрес электронной почты (учтите, что два пользователя не могут иметь одинаковый адрес электронной почты).
+     */
     @NotNull(message = "Значение поля Email не может быть пустым")
     @Email(message = "Email должен быть корректным адресом электронной почты")
     private String email;

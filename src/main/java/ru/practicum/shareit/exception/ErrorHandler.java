@@ -39,7 +39,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-   // @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity handleIdExistsException(final IdExistsException e) {
             return new ResponseEntity<>(
                     String.format(e.getParameter()),

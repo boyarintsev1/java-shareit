@@ -10,10 +10,10 @@ import ru.practicum.shareit.exception.IncorrectIdException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * класс хранения и обработки данных о вещах Item в памяти
@@ -23,11 +23,6 @@ import java.util.Map;
 @Slf4j
 public class InMemoryItemStorage implements ItemStorage {
     private final Map<Long, Item> items = new HashMap<>();
-
-    private final List<Item> itemsOfUser = new ArrayList<>();
-
-    private final List<Item> itemsFound = new ArrayList<>();
-
     long id = 0;
     String message;
 
@@ -50,13 +45,10 @@ public class InMemoryItemStorage implements ItemStorage {
      * метод получения списка всех вещей определенного пользователя
      */
     public List<Item> findAllItems(Integer userId) {
-        itemsOfUser.clear();
-        for (Item i : items.values()) {
-            if (i.getOwner().getId().equals(userId)) {
-                itemsOfUser.add(i);
-            }
-        }
-        return itemsOfUser;
+        return items.values()
+                .stream()
+                .filter(item -> item.getOwner().getId().equals(userId))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -64,10 +56,11 @@ public class InMemoryItemStorage implements ItemStorage {
      */
     @Override
     public Item findItemById(Long id) {
-        if (!items.containsKey(id)) {
+        if (items.containsKey(id)) {
+            return items.get(id);
+        } else {
             throw new IncorrectIdException("ItemID");
         }
-        return items.get(id);
     }
 
     /**
@@ -75,17 +68,13 @@ public class InMemoryItemStorage implements ItemStorage {
      */
     @Override
     public List<Item> findItem(String text) {
-        itemsFound.clear();
-        if ((text == null) || (text.isBlank()) || (text.isEmpty())) {
-            return itemsFound;
-        }
-        for (Item i : items.values()) {
-            if ((i.getName().toLowerCase().contains(text.toLowerCase().trim()) ||
-                    i.getDescription().toLowerCase().contains(text.toLowerCase().trim())) && (i.getAvailable())) {
-                itemsFound.add(i);
-            }
-        }
-        return itemsFound;
+        return items.values()
+                .stream()
+                .filter(item -> ((text != null && !text.isBlank() && !text.isEmpty()) &&
+                        (item.getAvailable()) &&
+                        (item.getName().toLowerCase().contains(text.toLowerCase().trim()) ||
+                                item.getDescription().toLowerCase().contains(text.toLowerCase().trim()))))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -159,13 +148,12 @@ public class InMemoryItemStorage implements ItemStorage {
      */
     @Override
     public void deleteItem(Long id) {
-        if (!items.containsKey(id)) {
-            throw new IncorrectIdException("itemNotExists");
-        } else {
+        if (items.containsKey(id)) {
             items.remove(id);
+        } else {
+            throw new IncorrectIdException("itemNotExists");
         }
     }
-
 }
 
 

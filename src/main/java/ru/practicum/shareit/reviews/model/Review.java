@@ -11,27 +11,45 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 /**
- * Класс Review содержит информацию об отзывах (review) по бронированию и содержит следующие поля:
- * id — уникальный идентификатор отзыва;
- * creationTime — дата создания отзыва;
- * item — вещь, на которую пишут отзыв;
- * description - текст отзыва;
- * user — пользователь, написавший отзыв;
- * grade - оценка;
+ * Класс Review содержит информацию об отзывах (review) по бронированию.
  */
 
 @Data
 public class Review {
+
+    /**
+     * id — уникальный идентификатор отзыва;
+     */
     private Long id;
+
+    /**
+     * creationTime — дата создания отзыва;
+     */
     @NotNull
     private LocalDateTime creationTime;
+
+    /**
+     * item — вещь, на которую пишут отзыв;
+     */
     private Item item;
+
+    /**
+     * description - текст отзыва;
+     */
     @NotNull
     @NotBlank
     @NotEmpty
     @Size(min = 1, max = 500, message = "Размер описания не может превышать 500 символов")
     private String description;
+
+    /**
+     * user — пользователь, написавший отзыв;
+     */
     private User user;
+
+    /**
+     * grade - оценка;
+     */
     @NotNull
     @NotEmpty
     private Integer grade;

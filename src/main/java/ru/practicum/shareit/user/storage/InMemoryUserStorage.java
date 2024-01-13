@@ -45,10 +45,11 @@ public class InMemoryUserStorage implements UserStorage {
      */
     @Override
     public User findUserById(Integer id) {
-        if (!users.containsKey(id)) {
+        if (users.containsKey(id)) {
+            return users.get(id);
+        } else {
             throw new IncorrectIdException("UserID");
         }
-        return users.get(id);
     }
 
     /**
@@ -76,23 +77,23 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User user, Integer id) {
         if (!users.containsKey(id)) {
             throw new IncorrectIdException("userNotExists");
-        } else {
-            if ((user.getName() != null) && (!user.getName().isBlank())) {
-                users.get(id).setName(user.getName());
-            }
-            if (user.getEmail() != null) {
-                if ((!users.containsValue(user)) || (user.getEmail().equals(users.get(id).getEmail()))) {
-                    users.get(id).setEmail(user.getEmail());
-                } else {
-                    message = String.format("Пользователь с электронной почтой %s уже зарегистрирован в системе. " +
-                            "Его нельзя создать. Можно только обновить данные (метод PUT).", user.getEmail());
-                    log.error(message);
-                    throw new ValidationException(message, HttpStatus.CONFLICT);
-                }
-            }
-            log.info("Обновлен объект: {}", users.get(id));
-            return UserMapper.toUserDto(users.get(id));
         }
+        if ((user.getName() != null) && (!user.getName().isBlank())) {
+            users.get(id).setName(user.getName());
+        }
+        if (user.getEmail() != null) {
+            if ((!users.containsValue(user)) || (user.getEmail().equals(users.get(id).getEmail()))) {
+                users.get(id).setEmail(user.getEmail());
+            } else {
+                message = String.format("Пользователь с электронной почтой %s уже зарегистрирован в системе. " +
+                        "Его нельзя создать. Можно только обновить данные (метод PUT).", user.getEmail());
+                log.error(message);
+                throw new ValidationException(message, HttpStatus.CONFLICT);
+            }
+        }
+        log.info("Обновлен объект: {}", users.get(id));
+        return UserMapper.toUserDto(users.get(id));
+
     }
 
     /**
@@ -100,10 +101,10 @@ public class InMemoryUserStorage implements UserStorage {
      */
     @Override
     public void deleteUser(Integer id) {
-        if (!users.containsKey(id)) {
-            throw new IncorrectIdException("userNotExists");
-        } else {
+        if (users.containsKey(id)) {
             users.remove(id);
+        } else {
+            throw new IncorrectIdException("userNotExists");
         }
     }
 }

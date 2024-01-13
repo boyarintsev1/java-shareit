@@ -14,23 +14,22 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * Класс Item ("вещь") содержит описание вещи. Поля:
- * id — уникальный идентификатор вещи;
- * name — краткое название;
- * description — развёрнутое описание;
- * available — статус о том, доступна или нет вещь для аренды;
- * owner — владелец вещи;
- * request — если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка
- * на соответствующий запрос.
+ * Класс Item ("вещь") содержит описание вещи.
  */
 @Data
 @Getter
 @JsonPropertyOrder({"id", "name", "description", "available", "owner", "request"})
 public class Item {
 
+    /**
+     * id — уникальный идентификатор вещи;
+     */
     @EqualsAndHashCode.Exclude
     private Long id;
 
+    /**
+     * name — краткое название;
+     */
     @NotNull
     @NotEmpty
     @NotBlank
@@ -38,19 +37,32 @@ public class Item {
             = "Название вещи должно быть длиной не более 30 символов")
     private String name;
 
+    /**
+     * description — развёрнутое описание;
+     */
     @NotNull
     @NotEmpty
     @NotBlank
     @Size(min = 1, max = 200, message = "Размер описания не может превышать 200 символов")
     private String description;
 
+    /**
+     * available — статус о том, доступна или нет вещь для аренды;
+     */
     @EqualsAndHashCode.Exclude
     @NotNull
     private Boolean available;
 
+    /**
+     * owner — владелец вещи;
+     */
     @EqualsAndHashCode.Exclude
     private User owner;
 
+    /**
+     * request — если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка
+     * на соответствующий запрос.
+     */
     @EqualsAndHashCode.Exclude
     protected ItemRequest request;
 

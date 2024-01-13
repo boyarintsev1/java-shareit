@@ -7,22 +7,31 @@ import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 /**
- * Класс ItemRequest отвечает за запрос вещи. Его атрибуты:
- * id — уникальный идентификатор запроса;
- * description — текст запроса, содержащий описание требуемой вещи;
- * requestor — пользователь, создавший запрос;
- * created — дата и время создания запроса.
+ * Класс ItemRequest отвечает за запрос вещи.
  */
 
 @Data
 public class ItemRequest {
 
+    /**
+     * id — уникальный идентификатор запроса;
+     */
     protected Integer id;
 
+    /**
+     * description — текст запроса, содержащий описание требуемой вещи;
+     */
     @Size(max = 200, message = "Размер описания не может превышать 200 символов")
     protected String description;
+
+    /**
+     * requestor — пользователь, создавший запрос;
+     */
     protected User requestor;
 
+    /**
+     * created — дата и время создания запроса.
+     */
     @PastOrPresent(message = "Дата запроса не может быть из будущего")
     protected LocalDateTime created;
 

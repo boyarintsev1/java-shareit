@@ -7,13 +7,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 
 /**
- * Класс ReviewDto ("отзыв") содержит описание отзыва Review, которое будет возвращено пользователю. Поля:
- * id — уникальный идентификатор отзыва;
- * creationTime — дата создания отзыва;
- * item — вещь, на которую пишут отзыв;
- * description - текст отзыва;
- * user — пользователь, написавший отзыв;
- * grade - оценка;
+ * Класс ReviewDto ("отзыв") содержит описание отзыва Review, которое будет возвращено пользователю.
  */
 
 public class ReviewDto extends Review {

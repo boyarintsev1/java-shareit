@@ -10,11 +10,11 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * TODO Sprint add-controllers.
+ * Класс-контроллер по User
  */
 @RestController
 @Slf4j
@@ -22,8 +22,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
-    private List<UserDto> userDtoList = new ArrayList<>();
 
     @Autowired
     public UserController(@Qualifier(value = "inMemoryUserService") UserService userService) {
@@ -35,11 +33,10 @@ public class UserController {
      */
     @GetMapping
     public List<UserDto> findAllUsers() {
-        userDtoList.clear();
-        for (User i : userService.findAllUsers()) {
-            userDtoList.add(UserMapper.toUserDto(i));
-        }
-        return userDtoList;
+        return userService.findAllUsers()
+                .stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -73,5 +70,4 @@ public class UserController {
     public void deleteUser(@PathVariable("id") Integer id) {
         userService.deleteUser(id);
     }
-
 }

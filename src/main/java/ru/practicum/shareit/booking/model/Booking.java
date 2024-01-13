@@ -10,28 +10,44 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * Класс Booking содержит информацию о бронировании (booking) и содержит следующие поля:
- * id — уникальный идентификатор бронирования;
- * start — дата и время начала бронирования;
- * end — дата и время конца бронирования;
- * item — вещь, которую пользователь бронирует;
- * booker — пользователь, который осуществляет бронирование;
- * status — статус бронирования. Может принимать одно из следующих значений:
- * WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование подтверждено владельцем,
- * REJECTED — бронирование отклонено владельцем, CANCELED — бронирование отменено создателем
+ * Класс Booking содержит информацию о бронировании (booking).
  */
 
 @Data
 public class Booking {
+
+    /**
+     * id — уникальный идентификатор бронирования;
+     */
     private Long id;
+
+    /**
+     * start — дата и время начала бронирования;
+     */
     @NotNull
     @FutureOrPresent(message = "Дата бронирования не может быть из прошлого")
     private LocalDateTime start;
+
+    /**
+     * end — дата и время конца бронирования;
+     */
     @NotNull
     @FutureOrPresent(message = "Дата бронирования не может быть из прошлого")
     private LocalDateTime end;
+
+    /**
+     * item — вещь, которую пользователь бронирует;
+     */
     private Item item;
+
+    /**
+     * booker — пользователь User, который осуществляет бронирование;
+     */
     private User booker;
+
+    /**
+     * status — статус бронирования.
+     */
     private BookingStatus status;
 
     public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus status) {

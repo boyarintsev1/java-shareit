@@ -6,11 +6,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 
 /**
- * Класс ItemRequestDto содержит описание запроса ItemRequest, которое будет возвращено пользователю. Поля::
- * id — уникальный идентификатор запроса;
- * description — текст запроса, содержащий описание требуемой вещи;
- * requestor — пользователь, создавший запрос;
- * created — дата и время создания запроса.
+ * Класс ItemRequestDto содержит описание запроса ItemRequest, которое будет возвращено пользователю.
  */
 
 public class ItemRequestDto extends ItemRequest {
