@@ -61,7 +61,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "SELECT * FROM public.BOOKINGS b WHERE b.item_id = ?1 and b.status like '%APPROVED%'",
             nativeQuery = true)
-    List<Booking> findAllBookingsByItem_Id (Long itemId);
+    List<Booking> findAllBookingsByItem_Id(Long itemId);
 
     @Query(value = "SELECT * FROM public.BOOKINGS b WHERE b.item_id = ?1 and b.booker_id = ?2 and b.end_date <= ?3 ",
             nativeQuery = true)
