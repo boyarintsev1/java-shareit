@@ -1,17 +1,20 @@
 package ru.practicum.shareit.user.dto;
 
-import ru.practicum.shareit.user.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Класс UserDto ("пользователь") содержит описание User, которое будет возвращено при запросах.
  */
-public class UserDto extends User {
-    public UserDto(Integer id, String name, String email) {
-        super(id, name, email);
-    }
-
-    public UserDto(String name, String email) {
-        super(name, email);
-    }
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+public class UserDto {
+    private Integer id;
+    private String name;
+    private String email;
 }
 

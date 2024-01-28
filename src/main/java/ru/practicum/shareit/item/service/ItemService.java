@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.booking.dto.BookingDtoForOwner;
+import ru.practicum.shareit.booking.entity.Booking;
+import ru.practicum.shareit.item.entity.Comment;
+import ru.practicum.shareit.item.entity.Item;
 
 import java.util.List;
 
@@ -43,4 +46,30 @@ public interface ItemService {
      * метод валидации данных о вещи при PATCH-запросах
      */
     void validateItemPatchRequest(Item item);
+
+    /**
+     * метод получения предыдущего бронирования указанной вещи
+     */
+    BookingDtoForOwner findLastBookingsOfItem(Long itemId);
+
+    /**
+     * метод получения следующего бронирования указанной вещи
+     */
+    BookingDtoForOwner findNextBookingsOfItem(Long itemId);
+
+    /**
+     * метод создания нового комментариев к указанной вещи
+     */
+    Comment createComment(Comment comment);
+
+    /**
+     * метод получения списка комментариев к указанной вещи
+     */
+    List<Comment> findAllCommentsByItem_Id(Long itemId);
+
+    /**
+     * метод проверки, что пользователь действительно брал вещь в прошлом.
+     */
+    List<Booking> checkUserBookedItemInPast(Long itemId, Integer userId);
+
 }

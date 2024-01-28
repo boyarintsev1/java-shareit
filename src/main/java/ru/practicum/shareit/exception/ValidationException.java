@@ -18,5 +18,4 @@ public class ValidationException extends RuntimeException {
     public HttpStatus getStatus() {
         return status;
     }
-
 }
