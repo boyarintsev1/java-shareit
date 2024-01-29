@@ -15,7 +15,9 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -39,15 +41,14 @@ public class BookingController {
         if (userService.findUserById(userId) == null) {
             throw new IncorrectIdException("UserID");
         }
-        for (State i : State.values()) {
-            if (String.valueOf(i).equals(state)) {
-                return bookingService.findAllBookingsForBooker(userId, i)
-                        .stream()
-                        .map(bookingMapper::toBookingDto)
-                        .collect(Collectors.toList());
-            }
+        if (Arrays.stream(State.values()).anyMatch(x -> Objects.equals(String.valueOf(x), state))) {
+            return bookingService.findAllBookingsForBooker(userId, State.valueOf(state))
+                    .stream()
+                    .map(bookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+        } else {
+            throw new RequestParamException("Unknown state: " + state);
         }
-        throw new RequestParamException("Unknown state: " + state);
     }
 
     /**
@@ -60,16 +61,16 @@ public class BookingController {
         if (userService.findUserById(ownerId) == null) {
             throw new IncorrectIdException("UserID");
         }
-        for (State i : State.values()) {
-            if (String.valueOf(i).equals(state)) {
-                return bookingService.findAllBookingsForOwner(ownerId, i)
-                        .stream()
-                        .map(bookingMapper::toBookingDto)
-                        .collect(Collectors.toList());
-            }
+        if (Arrays.stream(State.values()).anyMatch(x -> Objects.equals(String.valueOf(x), state))) {
+            return bookingService.findAllBookingsForOwner(ownerId, State.valueOf(state))
+                    .stream()
+                    .map(bookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+        } else {
+            throw new RequestParamException("Unknown state: " + state);
         }
-        throw new RequestParamException("Unknown state: " + state);
     }
+
 
     /**
      * метод получения данных о заказе по его ID
@@ -113,23 +114,17 @@ public class BookingController {
     public BookingDto updateOrApproveBooking(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                              @PathVariable("bookingId") Long bookingId,
                                              @RequestBody(required = false) BookingRequestDto requestDto,
-                                             @RequestParam(value = "approved", required = false) String approved) {
+                                             @RequestParam(value = "approved", required = false) Boolean approved) {
         if (userService.findUserById(userId) == null) {
             throw new IncorrectIdException("UserID");
         }
         if (approved != null) {
-            if (!bookingService.findBookingById(bookingId).getItem().getOwner().getId().equals(userId))
+            if (!bookingService.findBookingById(bookingId).getItem().getOwner().getId().equals(userId)) {
                 throw new IncorrectIdException("Данный пользователь не является владельцем вещи " +
                         "и не может её редактировать.");
-            if (approved.isEmpty() || approved.isBlank()) {
-                throw new ValidationException("В запросе отсутствует значение APPROVED", HttpStatus.BAD_REQUEST);
-            } else if (!("true".equalsIgnoreCase(approved.trim()) || "false".equalsIgnoreCase(approved.trim()))) {
-                throw new ValidationException("Значение APPROVED должно быть булевым значением (true-false).",
-                        HttpStatus.BAD_REQUEST);
-            } else if (("true".equalsIgnoreCase(approved.trim()) || "false".equalsIgnoreCase(approved.trim()))) {
-                return bookingMapper.toBookingDto(
-                        bookingService.approveBooking(userId, bookingId, Boolean.parseBoolean(approved)));
             }
+            return bookingMapper.toBookingDto(
+                    bookingService.approveBooking(userId, bookingId, approved));
         }
         if (!bookingService.findBookingById(bookingId).getBooker().getId().equals(userId))
             throw new ValidationException("данный пользователь не является автором заказа и не может" +
