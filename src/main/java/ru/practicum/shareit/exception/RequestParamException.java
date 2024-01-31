@@ -1,9 +1,9 @@
 package ru.practicum.shareit.exception;
 
-public class IncorrectIdException extends RuntimeException {
+public class RequestParamException extends RuntimeException {
     private final String parameter;
 
-    public IncorrectIdException(String parameter) {
+    public RequestParamException(String parameter) {
         this.parameter = parameter;
     }
 
@@ -11,4 +11,3 @@ public class IncorrectIdException extends RuntimeException {
         return parameter;
     }
 }
-

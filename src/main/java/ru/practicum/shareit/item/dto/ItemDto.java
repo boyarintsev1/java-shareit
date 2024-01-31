@@ -1,18 +1,29 @@
 package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import ru.practicum.shareit.booking.dto.BookingDtoForOwner;
+
+import java.util.List;
 
 /**
  * Класс ItemDto ("вещь") содержит описание вещи Item, которое будет возвращено пользователю.
  */
-
-public class ItemDto extends Item {
-
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+public class ItemDto {
+    private Long id;
+    private String name;
+    private String description;
+    private Boolean available;
+    private Integer owner;
     private Integer request;
+    private BookingDtoForOwner lastBooking;
+    private BookingDtoForOwner nextBooking;
+    private List<CommentDto> comments;
 
-    public ItemDto(Long id, String name, String description, Boolean available, User owner, Integer request) {
-        super(id, name, description, available, owner);
-        this.request = request;
-    }
 }

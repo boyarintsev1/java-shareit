@@ -1,7 +1,7 @@
 package ru.practicum.shareit.request.model;
 
 import lombok.Data;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.entity.User;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;

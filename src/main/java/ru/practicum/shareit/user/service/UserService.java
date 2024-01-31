@@ -1,19 +1,14 @@
 package ru.practicum.shareit.user.service;
 
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.entity.User;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * интерфейс для работы с данными о User
  */
-public interface UserService {
 
-    /**
-     * метод получения данных о всех пользователях в виде HashMap
-     */
-    Map<Integer, User> getUsers();
+public interface UserService {
 
     /**
      * метод получения списка всех пользователей
