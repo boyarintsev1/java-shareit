@@ -19,7 +19,6 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Класс-контроллер по Item
@@ -38,11 +37,18 @@ public class ItemController {
      * метод получения списка всех вещей определенного пользователя
      */
     @GetMapping
-    public List<ItemDto> findAllItems(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return itemService.findAllItems(userId)
-                .stream()
+    public List<ItemDto> findAllItems(
+            @RequestHeader("X-Sharer-User-Id") Integer userId,
+            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
+        if (userService.findUserById(userId) == null)
+            throw new IncorrectIdException("UserID");
+        if ((from < 0) || (size <= 0))
+            throw new ValidationException("неверно указаны параметры запросы from (д.б.>=0) или size (д.б.>0",
+                    HttpStatus.BAD_REQUEST);
+        return itemService.findAllItems(userId, from, size)
                 .map(itemMapper::toItemDtoForOwner)
-                .collect(Collectors.toList());
+                .getContent();
     }
 
     /**
@@ -52,20 +58,25 @@ public class ItemController {
     public ItemDto findItemById(@RequestHeader(value = "X-Sharer-User-Id", required = false) Integer userId,
                                 @PathVariable("id") Long id) {
         if ((userId != null) && (itemService.findItemById(id)).getOwner().getId().equals(userId)) {
-            return (itemMapper.toItemDtoForOwner(itemService.findItemById(id)));
+            return itemMapper.toItemDtoForOwner(itemService.findItemById(id));
         }
-        return (itemMapper.toItemDtoForBooker(itemService.findItemById(id)));
+        return itemMapper.toItemDtoForBooker(itemService.findItemById(id));
     }
 
     /**
      * метод поиска вещи по наименованию и описанию
      */
     @GetMapping("/search")
-    public List<ItemDto> findItem(@RequestParam(value = "text") String text) {
-        return itemService.findItem(text)
-                .stream()
+    public List<ItemDto> findItem(
+            @RequestParam(value = "text") String text,
+            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
+        if ((from < 0) || (size <= 0))
+            throw new ValidationException("неверно указаны параметры запросы from (д.б.>=0) или size (д.б.>0",
+                    HttpStatus.BAD_REQUEST);
+        return itemService.findItem(text, from, size)
                 .map(itemMapper::toItemDtoForBooker)
-                .collect(Collectors.toList());
+                .getContent();
     }
 
     /**

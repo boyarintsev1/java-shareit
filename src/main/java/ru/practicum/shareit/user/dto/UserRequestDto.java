@@ -12,6 +12,7 @@ import javax.validation.constraints.*;
 @Getter
 @Setter
 @JsonPropertyOrder({"id", "name", "email"})
+@Builder
 @AllArgsConstructor
 public class UserRequestDto {
 

@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +17,6 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Класс BookingServiceImpl содержит имплементацию интерфейса о бронировании (booking).
@@ -29,42 +31,44 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public  List<Booking>  findAllBookingsForBooker(Integer userId, State stateEnum) {
+    public Page<Booking> findAllBookingsForBooker(Integer bookerId, State stateEnum, Integer from, Integer size) {
         log.info("Исполняется запрос на получение всех бронирований пользователя.");
+        Pageable page = PageRequest.of(from / size, size);
         switch (stateEnum) {
             case ALL:
-                return bookingRepository.findAllByBookerId(userId);
+                return bookingRepository.findAllByBookerId(bookerId, page);
             case CURRENT:
-                return bookingRepository.findCurrentBookingsForBooker(userId, LocalDateTime.now(), LocalDateTime.now());
+                return bookingRepository.findCurrentBookingsForBooker(bookerId, LocalDateTime.now(), LocalDateTime.now(), page);
             case PAST:
-                return bookingRepository.findPastBookingsForBooker(userId, LocalDateTime.now());
+                return bookingRepository.findPastBookingsForBooker(bookerId, LocalDateTime.now(), page);
             case FUTURE:
-                return bookingRepository.findFutureBookingsForBooker(userId, LocalDateTime.now());
+                return bookingRepository.findFutureBookingsForBooker(bookerId, LocalDateTime.now(), page);
             case WAITING:
             case REJECTED:
                 String status = String.valueOf(stateEnum);
-                return bookingRepository.findAllByBooker_IdAndStatus(userId, status);
+                return bookingRepository.findAllByBooker_IdAndStatus(bookerId, status, page);
         }
         return null;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
-    public List<Booking> findAllBookingsForOwner(Integer ownerId, State stateEnum) {
+    public Page<Booking> findAllBookingsForOwner(Integer ownerId, State stateEnum, Integer from, Integer size) {
         log.info("Исполняется запрос на получение всех бронирований для владельца.");
+        Pageable page = PageRequest.of(from / size, size);
         switch (stateEnum) {
             case ALL:
-                return bookingRepository.findAllBookingsForOwner(ownerId);
+                return bookingRepository.findAllBookingsToOwnerPageable(ownerId, page);
             case CURRENT:
-                return bookingRepository.findCurrentBookingsForOwner(ownerId, LocalDateTime.now(), LocalDateTime.now());
+                return bookingRepository.findCurrentBookingsForOwnerPageable(ownerId, LocalDateTime.now(), LocalDateTime.now(), page);
             case PAST:
-                return bookingRepository.findPastBookingsForOwner(ownerId, LocalDateTime.now());
+                return bookingRepository.findPastBookingsForOwnerPageable(ownerId, LocalDateTime.now(), page);
             case FUTURE:
-                return bookingRepository.findFutureBookingsForOwner(ownerId, LocalDateTime.now());
+                return bookingRepository.findFutureBookingsForOwnerPageable(ownerId, LocalDateTime.now(), page);
             case WAITING:
             case REJECTED:
                 String status = String.valueOf(stateEnum);
-                return bookingRepository.findStatusBookingsForOwner(ownerId, status);
+                return bookingRepository.findStatusBookingsForOwnerPageable(ownerId, status, page);
         }
         return null;
     }
@@ -155,3 +159,4 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 }
+

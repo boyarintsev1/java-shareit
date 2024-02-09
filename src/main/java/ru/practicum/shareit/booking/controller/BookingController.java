@@ -18,7 +18,6 @@ import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Класс-контроллер по бронированиям Booking
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/bookings")
 public class BookingController {
-    private final BookingService bookingService;
+    private final  BookingService bookingService;
     public final BookingMapper bookingMapper;
     public final UserService userService;
 
@@ -35,17 +34,20 @@ public class BookingController {
      * метод получения списка бронирований текущего пользователя
      */
     @GetMapping
-    public List<BookingDto> findAllBookings(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                            @RequestParam(value = "state", required = false,
-                                                    defaultValue = "ALL") String state) {
-        if (userService.findUserById(userId) == null) {
+    public List<BookingDto> findAllBookings(
+            @RequestHeader("X-Sharer-User-Id") Integer bookerId,
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
+        if (userService.findUserById(bookerId) == null)
             throw new IncorrectIdException("UserID");
-        }
+        if ((from < 0) || (size <= 0))
+            throw new ValidationException("неверно указаны параметры запросы from (д.б.>=0) или size (д.б.>0",
+                    HttpStatus.BAD_REQUEST);
+
         if (Arrays.stream(State.values()).anyMatch(x -> Objects.equals(String.valueOf(x), state))) {
-            return bookingService.findAllBookingsForBooker(userId, State.valueOf(state))
-                    .stream()
-                    .map(bookingMapper::toBookingDto)
-                    .collect(Collectors.toList());
+            return bookingService.findAllBookingsForBooker(bookerId, State.valueOf(state), from, size)
+                    .map(bookingMapper::toBookingDto).getContent();
         } else {
             throw new RequestParamException("Unknown state: " + state);
         }
@@ -55,22 +57,25 @@ public class BookingController {
      * метод получения списка бронирований для всех вещей текущего пользователя
      */
     @GetMapping("/owner")
-    public List<BookingDto> findAllBookingsForOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId,
-                                                    @RequestParam(value = "state", required = false,
-                                                            defaultValue = "ALL") String state) {
+    public List<BookingDto> findAllBookingsForOwner(
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId,
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         if (userService.findUserById(ownerId) == null) {
             throw new IncorrectIdException("UserID");
         }
+        if ((from < 0) || (size <= 0))
+            throw new ValidationException("неверно указаны параметры запросы from (д.б.>=0) или size (д.б.>0",
+                    HttpStatus.BAD_REQUEST);
+
         if (Arrays.stream(State.values()).anyMatch(x -> Objects.equals(String.valueOf(x), state))) {
-            return bookingService.findAllBookingsForOwner(ownerId, State.valueOf(state))
-                    .stream()
-                    .map(bookingMapper::toBookingDto)
-                    .collect(Collectors.toList());
+            return bookingService.findAllBookingsForOwner(ownerId, State.valueOf(state), from, size)
+                    .map(bookingMapper::toBookingDto).getContent();
         } else {
             throw new RequestParamException("Unknown state: " + state);
         }
     }
-
 
     /**
      * метод получения данных о заказе по его ID
@@ -78,9 +83,8 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingDto findBookingById(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                       @PathVariable("bookingId") Long bookingId) {
-        if (userService.findUserById(userId) == null) {
+        if (userService.findUserById(userId) == null)
             throw new IncorrectIdException("UserID");
-        }
         if (bookingService.findBookingById(bookingId).getItem().getOwner().getId().equals(userId) ||
                 (bookingService.findBookingById(bookingId).getBooker().getId().equals(userId))) {
             return bookingMapper.toBookingDto(bookingService.findBookingById(bookingId));

@@ -1,9 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
+import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.enums.State;
-
-import java.util.List;
 
 /**
  * интерфейс для работы с данными о Booking
@@ -13,12 +12,12 @@ public interface BookingService {
     /**
      * метод получения списка бронирований текущего пользователя
      */
-    List<Booking> findAllBookingsForBooker(Integer userId, State stateEnum);
+    Page<Booking> findAllBookingsForBooker(Integer bookerId, State stateEnum, Integer from, Integer size);
 
     /**
      * метод получения списка бронирований для всех вещей текущего пользователя
      */
-    List<Booking> findAllBookingsForOwner(Integer ownerId, State stateEnum);
+    Page<Booking> findAllBookingsForOwner(Integer bookerId, State stateEnum, Integer from, Integer size);
 
     /**
      * метод получения данных о вещи по её ID
@@ -49,4 +48,5 @@ public interface BookingService {
      * метод валидации данных о бронировании при PATCH-запросах
      */
     void validateBookingPatchRequest(Booking booking);
+
 }

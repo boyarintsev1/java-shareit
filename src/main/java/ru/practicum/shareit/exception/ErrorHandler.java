@@ -37,6 +37,9 @@ public class ErrorHandler {
         if (e.getParameter().equals("UserIsNotBooker")) {
             message = "данный пользователь не является автором заказа и не может его редактировать.";
         }
+        if (e.getParameter().equals("RequestID")) {
+            message = "в запросе неверно указана информация о запросе. Запроса на вещь с таким ID не существует.";
+        }
         log.error(String.format("Неверно указан %s. Описание: %s", e.getParameter(), message));
         return new ErrorResponse(
                 String.format("Неверно указан %s. Описание: %s", e.getParameter(), message));

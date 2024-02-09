@@ -40,7 +40,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     public UserDto findUserById(@PathVariable("id") Integer id) {
-        return (mapper.toUserDto(userService.findUserById(id)));
+        return mapper.toUserDto(userService.findUserById(id));
     }
 
     /**

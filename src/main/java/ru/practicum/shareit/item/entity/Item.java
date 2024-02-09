@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.request.entity.Request;
 import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
@@ -57,10 +58,11 @@ public class Item {
      * request — если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка
      * на соответствующий запрос.
      */
-    @Transient
-    protected Integer request;
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private Request request;
 
-    protected Item(Long id, String name, String description, Boolean available, User owner, Integer request) {
+    public Item(Long id, String name, String description, Boolean available, User owner, Request request) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -69,7 +71,6 @@ public class Item {
         this.request = request;
     }
 
-
     @JsonCreator
     protected Item(String name, String description, Boolean available) {
         this.name = name;
@@ -77,7 +78,7 @@ public class Item {
         this.available = available;
     }
 
-    protected Item() {
+    public Item() {
     }
 
 }

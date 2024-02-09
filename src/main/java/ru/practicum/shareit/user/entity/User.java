@@ -1,9 +1,7 @@
 package ru.practicum.shareit.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -15,6 +13,7 @@ import javax.persistence.*;
         @UniqueConstraint(name = "UQ_USER_EMAIL", columnNames = {"email"}))
 @Getter
 @Setter
+@AllArgsConstructor
 @RequiredArgsConstructor
 @JsonPropertyOrder({"id", "name", "email"})
 public class User {

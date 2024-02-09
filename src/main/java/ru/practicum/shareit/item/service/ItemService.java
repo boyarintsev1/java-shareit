@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.dto.BookingDtoForOwner;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.item.entity.Comment;
@@ -15,7 +16,12 @@ public interface ItemService {
     /**
      * метод получения списка всех вещей определенного пользователя
      */
-    List<Item> findAllItems(Integer userId);
+    Page<Item> findAllItems(Integer userId, Integer from, Integer size);
+
+    /**
+     * метод получения списка всех вещей определенного владельца
+     */
+    List<Item> findAllItemsByOwnerAndRequest(Integer userId);
 
     /**
      * метод получения данных о вещи по её ID
@@ -25,7 +31,7 @@ public interface ItemService {
     /**
      * метод поиска вещи по наименованию и описанию
      */
-    List<Item> findItem(String text);
+    Page<Item> findItem(String text, Integer from, Integer size);
 
     /**
      * метод создания новой вещи
