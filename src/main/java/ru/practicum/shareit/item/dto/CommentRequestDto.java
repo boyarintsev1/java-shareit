@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.shareit.item.entity.Item;
@@ -10,6 +11,7 @@ import ru.practicum.shareit.user.entity.User;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 /**
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
+@Builder
 @JsonPropertyOrder({"id", "text", "item", "author", "created"})
 @AllArgsConstructor
 public class CommentRequestDto {
@@ -31,4 +34,17 @@ public class CommentRequestDto {
     @FutureOrPresent(message = "Дата комментария не может быть из прошлого")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CommentRequestDto)) return false;
+        CommentRequestDto that = (CommentRequestDto) o;
+        return getText().equals(that.getText());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getText());
+    }
 }

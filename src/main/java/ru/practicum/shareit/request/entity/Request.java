@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.entity.User;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Класс ItemRequest отвечает за запрос вещи.
@@ -49,5 +50,20 @@ public class Request {
     @PastOrPresent(message = "Дата запроса не может быть из будущего")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Request)) return false;
+        Request request = (Request) o;
+        return Objects.equals(getDescription(), request.getDescription())
+                && Objects.equals(getRequestor(), request.getRequestor())
+                && Objects.equals(getCreated(), request.getCreated());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDescription(), getRequestor(), getCreated());
+    }
 }
 

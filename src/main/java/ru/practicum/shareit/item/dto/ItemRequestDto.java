@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 /**
  * Класс ItemRequestDto содержит информацию c входящего POST/PATCH запроса о вещах (item).
@@ -62,5 +63,18 @@ public class ItemRequestDto {
      */
     @EqualsAndHashCode.Exclude
     private Long requestId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ItemRequestDto)) return false;
+        ItemRequestDto that = (ItemRequestDto) o;
+        return Objects.equals(getId(), that.getId()) && getName().equals(that.getName()) && getDescription().equals(that.getDescription()) && getAvailable().equals(that.getAvailable()) && Objects.equals(getOwner(), that.getOwner()) && Objects.equals(getRequestId(), that.getRequestId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), getAvailable(), getOwner(), getRequestId());
+    }
 
 }

@@ -124,7 +124,7 @@ public class BookingController {
         }
         if (approved != null) {
             if (!bookingService.findBookingById(bookingId).getItem().getOwner().getId().equals(userId)) {
-                throw new IncorrectIdException("Данный пользователь не является владельцем вещи " +
+                throw new IncorrectIdException("Данный пользователь не является владельцем бронирования " +
                         "и не может её редактировать.");
             }
             return bookingMapper.toBookingDto(

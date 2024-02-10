@@ -9,6 +9,7 @@ import ru.practicum.shareit.request.entity.Request;
 import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Класс Item ("вещь") содержит описание вещи.
@@ -81,4 +82,21 @@ public class Item {
     public Item() {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return Objects.equals(getId(), item.getId())
+                && getName().equals(item.getName())
+                && getDescription().equals(item.getDescription())
+                && getAvailable().equals(item.getAvailable())
+                && Objects.equals(getOwner(), item.getOwner())
+                && Objects.equals(getRequest(), item.getRequest());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), getAvailable(), getOwner(), getRequest());
+    }
 }

@@ -17,7 +17,6 @@ import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,7 +40,6 @@ public class ItemControllerIntegrationTest {
     private UserRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
-    List<Item> expectedList;
 
     @AfterEach
     public void resetDb() {

@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.IncorrectIdException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
@@ -27,6 +29,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -162,6 +165,68 @@ class RequestControllerMocMvcTest {
                 .getContentAsString(StandardCharsets.UTF_8);
 
         assertEquals(objectMapper.writeValueAsString(List.of(requestDto)), result);
+    }
+
+    @SneakyThrows
+    @Test
+    void findAllRequestsPageAble_whenUserIsNotFound_thenExceptionThrows() {
+        User user = createTestUser();
+        RequestDto requestDto = createTestRequestDto();
+        Request request = createTestRequest();
+        Mockito.when(userService.findUserById(Mockito.any())).thenReturn(null);
+        Mockito.when(requestMapper.toRequestDto(Mockito.any())).thenReturn(requestDto);
+        Mockito.when(requestService.findAllRequestsPageAble(anyInt(), anyInt(), anyInt()))
+                .thenReturn(new PageImpl<>(List.of(request)));
+
+        mockMvc.perform(
+                        get("/requests/all")
+                                .header("X-Sharer-User-Id", user.getId()))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertEquals(
+                        IncorrectIdException.class, Objects.requireNonNull(result.getResolvedException()).getClass()));
+    }
+
+    @SneakyThrows
+    @Test
+    void findAllRequestsPageAble_whenFromIsNotValid_thenExceptionThrows() {
+        User user = createTestUser();
+        RequestDto requestDto = createTestRequestDto();
+        Request request = createTestRequest();
+        Mockito.when(userService.findUserById(Mockito.any())).thenReturn(user);
+        Mockito.when(requestMapper.toRequestDto(Mockito.any())).thenReturn(requestDto);
+        Mockito.when(requestService.findAllRequestsPageAble(anyInt(), anyInt(), anyInt()))
+                .thenReturn(new PageImpl<>(List.of(request)));
+
+        mockMvc.perform(
+                        get("/requests/all")
+                                .header("X-Sharer-User-Id", user.getId())
+                                .param("from", "-1"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertEquals(
+                        ValidationException.class, Objects.requireNonNull(result.getResolvedException()).getClass()));
+    }
+
+    @SneakyThrows
+    @Test
+    void findAllRequestsPageAble_whenSizeIsNotValid_thenExceptionThrows() {
+        User user = createTestUser();
+        RequestDto requestDto = createTestRequestDto();
+        Request request = createTestRequest();
+        Mockito.when(userService.findUserById(Mockito.any())).thenReturn(user);
+        Mockito.when(requestMapper.toRequestDto(Mockito.any())).thenReturn(requestDto);
+        Mockito.when(requestService.findAllRequestsPageAble(anyInt(), anyInt(), anyInt()))
+                .thenReturn(new PageImpl<>(List.of(request)));
+
+        mockMvc.perform(
+                        get("/requests/all")
+                                .header("X-Sharer-User-Id", user.getId())
+                                .param("size", "0"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertEquals(
+                        ValidationException.class, Objects.requireNonNull(result.getResolvedException()).getClass()));
     }
 
     @SneakyThrows

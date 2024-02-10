@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Класс Comment ("отзыв") содержит отзывы пользователей, бравших вещь в аренду.
@@ -53,5 +54,19 @@ public class Comment {
      */
     @Column(nullable = false)
     private LocalDateTime created;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment)) return false;
+        Comment comment = (Comment) o;
+        return getText().equals(comment.getText()) && getItem().equals(comment.getItem())
+                && getAuthor().equals(comment.getAuthor()) && getCreated().equals(comment.getCreated());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getText(), getItem(), getAuthor(), getCreated());
+    }
 }
 

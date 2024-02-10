@@ -21,6 +21,7 @@ public class ItemMapper {
     public final RequestService requestService;
     public final CommentMapper commentMapper;
 
+
     public Item toItem(ItemRequestDto requestDto) {
         if (requestDto == null) {
             return null;
