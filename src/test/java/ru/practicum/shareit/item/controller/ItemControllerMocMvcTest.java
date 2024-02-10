@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.IncorrectIdException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
@@ -30,6 +32,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -306,5 +309,53 @@ class ItemControllerMocMvcTest {
                 .getContentAsString(StandardCharsets.UTF_8);
 
         assertEquals(objectMapper.writeValueAsString(commentDto), result);
+    }
+
+    @SneakyThrows
+    @Test
+    void createComment_whenUserIsNotFound_thenExceptionThrows() {
+        User user = createTestUser();
+        Item item = createTestItem();
+        CommentDto requestDto = CommentDto.builder()
+                .text("Add comment from user1")
+                .build();
+        Comment comment = new Comment(1L, "Add comment from user1", item, user, LocalDateTime.now());
+
+        mockMvc.perform(
+                        post("/items/{itemId}/comment", item.getId())
+                                .header("X-Sharer-User-Id", user.getId())
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(requestDto))
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertEquals(
+                        IncorrectIdException.class, Objects.requireNonNull(result.getResolvedException()).getClass()));
+    }
+
+    @SneakyThrows
+    @Test
+    void createComment_whenCheckUserBookedItemInPastIsEmpty_thenExceptionThrows() {
+        User user = createTestUser();
+        Item item = createTestItem();
+        CommentDto requestDto = CommentDto.builder()
+                .text("Add comment from user1")
+                .build();
+        Comment comment = new Comment(1L, "Add comment from user1", item, user, LocalDateTime.now());
+        Mockito.when(userService.findUserById(anyInt())).thenReturn(user);
+        Mockito.when(itemService.checkUserBookedItemInPast(anyLong(), anyInt())).thenReturn(List.of());
+
+        mockMvc.perform(
+                        post("/items/{itemId}/comment", item.getId())
+                                .header("X-Sharer-User-Id", user.getId())
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(requestDto))
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertEquals(
+                        ValidationException.class, Objects.requireNonNull(result.getResolvedException()).getClass()));
     }
 }

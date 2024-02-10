@@ -111,7 +111,7 @@ public class ItemController {
     /**
      * метод добавления комментария о вещи
      */
-    @PostMapping("/{itemId}/comment") //POST /items/{itemId}/comment
+    @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                     @PathVariable("itemId") Long itemId,
                                     @Valid @RequestBody CommentRequestDto requestDto) {
