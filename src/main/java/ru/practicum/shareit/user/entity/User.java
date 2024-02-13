@@ -1,11 +1,10 @@
 package ru.practicum.shareit.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Класс User содержит информацию о пользователях (user).
@@ -15,6 +14,7 @@ import javax.persistence.*;
         @UniqueConstraint(name = "UQ_USER_EMAIL", columnNames = {"email"}))
 @Getter
 @Setter
+@AllArgsConstructor
 @RequiredArgsConstructor
 @JsonPropertyOrder({"id", "name", "email"})
 public class User {
@@ -39,5 +39,17 @@ public class User {
     @Column (name = "email", nullable = false)
     private String email;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getName(), user.getName()) && Objects.equals(getEmail(), user.getEmail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getEmail());
+    }
 }
 

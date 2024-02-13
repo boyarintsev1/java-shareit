@@ -1,17 +1,14 @@
 package ru.practicum.shareit.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import ru.practicum.shareit.request.model.ItemRequest;
+import lombok.*;
 import ru.practicum.shareit.user.entity.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 /**
  * Класс ItemRequestDto содержит информацию c входящего POST/PATCH запроса о вещах (item).
@@ -19,6 +16,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @JsonPropertyOrder({"id", "name", "description", "available", "owner", "request"})
+@Builder
 @AllArgsConstructor
 public class ItemRequestDto {
 
@@ -64,6 +62,19 @@ public class ItemRequestDto {
      * на соответствующий запрос.
      */
     @EqualsAndHashCode.Exclude
-    protected ItemRequest request;
+    private Long requestId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ItemRequestDto)) return false;
+        ItemRequestDto that = (ItemRequestDto) o;
+        return Objects.equals(getId(), that.getId()) && getName().equals(that.getName()) && getDescription().equals(that.getDescription()) && getAvailable().equals(that.getAvailable()) && Objects.equals(getOwner(), that.getOwner()) && Objects.equals(getRequestId(), that.getRequestId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), getAvailable(), getOwner(), getRequestId());
+    }
 
 }

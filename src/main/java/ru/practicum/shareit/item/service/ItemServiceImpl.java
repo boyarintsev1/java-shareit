@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +37,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Item> findAllItems(Integer userId) {
+    public Page<Item> findAllItems(Integer userId, Integer from, Integer size) {
         log.info("Выполняется запрос на получение всех вещей определенного пользователя.");
-        return itemRepository.findByOwnerIdOrderByIdAsc(userId);
+        Pageable page = PageRequest.of(from / size, size);
+        return itemRepository.findByOwnerIdOrderByIdAsc(userId, page);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Item> findAllItemsByOwnerAndRequest(Integer userId) {
+        log.info("Выполняется запрос на получение всех вещей определенного пользователя.");
+        return itemRepository.findByRequestNotNullOrderByIdAsc(userId);
     }
 
     @Transactional(readOnly = true)
@@ -48,12 +59,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Item> findItem(String text) {
+    public Page<Item> findItem(String text, Integer from, Integer size) {
         log.info("Выполняется поиска вещи по наименованию и описанию");
+        Pageable page = PageRequest.of(from / size, size);
         if (text != null && !text.isBlank() && !text.isEmpty()) {
-            return itemRepository.findInNameAndDescription(text.toLowerCase().trim());
+            return itemRepository.findInNameAndDescription(text.toLowerCase().trim(), page);
         }
-        return List.of();
+        return Page.empty();
     }
 
     @Transactional
@@ -165,7 +177,6 @@ public class ItemServiceImpl implements ItemService {
     public Comment createComment(Comment comment) {
         log.info("Создан новый комментарий: {}", comment);
         return commentRepository.save(comment);
-
     }
 
     @Override

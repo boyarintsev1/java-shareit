@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Класс Booking содержит информацию о бронировании (booking).
@@ -60,4 +61,18 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Booking)) return false;
+        Booking booking = (Booking) o;
+        return Objects.equals(getStart(), booking.getStart()) && Objects.equals(getEnd(), booking.getEnd())
+                && Objects.equals(getItem(), booking.getItem()) && Objects.equals(getBooker(), booking.getBooker())
+                && getStatus() == booking.getStatus();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getStart(), getEnd(), getItem(), getBooker(), getStatus());
+    }
 }

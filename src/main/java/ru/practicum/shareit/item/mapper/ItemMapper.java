@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemShort;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.request.service.RequestService;
 
 import java.util.stream.Collectors;
 
@@ -17,7 +18,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemMapper {
     public final ItemService itemService;
+    public final RequestService requestService;
     public final CommentMapper commentMapper;
+
 
     public Item toItem(ItemRequestDto requestDto) {
         if (requestDto == null) {
@@ -30,7 +33,7 @@ public class ItemMapper {
                 .description(requestDto.getDescription())
                 .available(requestDto.getAvailable())
                 .owner(requestDto.getOwner())
-                .request(requestDto.getRequest() != null ? requestDto.getRequest().getId() : null)
+                .request(requestDto.getRequestId() != null ? requestService.findRequestById(requestDto.getRequestId()) : null)
                 .build();
     }
 
@@ -46,7 +49,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(item.getOwner().getId())
-                .request(item.getRequest() != null ? item.getRequest() : null)
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
 
@@ -72,7 +75,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(item.getOwner().getId())
-                .request(item.getRequest() != null ? item.getRequest() : null)
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .lastBooking(itemService.findLastBookingsOfItem(item.getId())
                         != null ? itemService.findLastBookingsOfItem(item.getId()) : null)
                 .nextBooking(itemService.findNextBookingsOfItem(item.getId())
@@ -95,13 +98,27 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(item.getOwner().getId())
-                .request(item.getRequest() != null ? item.getRequest() : null)
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .lastBooking(null)
                 .nextBooking(null)
                 .comments(itemService.findAllCommentsByItem_Id(item.getId())
                         .stream()
                         .map(commentMapper::toCommentDto)
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    public ItemDto toItemDtoForRequest(Item item) {
+        if (item == null) {
+            return null;
+        }
+        return ItemDto
+                .builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
+                .available(item.getAvailable())
                 .build();
     }
 }

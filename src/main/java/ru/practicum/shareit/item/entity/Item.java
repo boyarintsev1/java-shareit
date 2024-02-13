@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.request.entity.Request;
 import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Класс Item ("вещь") содержит описание вещи.
@@ -57,10 +59,11 @@ public class Item {
      * request — если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка
      * на соответствующий запрос.
      */
-    @Transient
-    protected Integer request;
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private Request request;
 
-    protected Item(Long id, String name, String description, Boolean available, User owner, Integer request) {
+    public Item(Long id, String name, String description, Boolean available, User owner, Request request) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -69,7 +72,6 @@ public class Item {
         this.request = request;
     }
 
-
     @JsonCreator
     protected Item(String name, String description, Boolean available) {
         this.name = name;
@@ -77,7 +79,24 @@ public class Item {
         this.available = available;
     }
 
-    protected Item() {
+    public Item() {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return Objects.equals(getId(), item.getId())
+                && getName().equals(item.getName())
+                && getDescription().equals(item.getDescription())
+                && getAvailable().equals(item.getAvailable())
+                && Objects.equals(getOwner(), item.getOwner())
+                && Objects.equals(getRequest(), item.getRequest());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), getAvailable(), getOwner(), getRequest());
+    }
 }

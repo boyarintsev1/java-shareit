@@ -1,8 +1,8 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.shareit.booking.enums.BookingStatus;
@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @JsonPropertyOrder({"id", "start", "end", "item", "booker", "status"})
+@Builder
 @AllArgsConstructor
 public class BookingRequestDto {
 
@@ -31,7 +32,6 @@ public class BookingRequestDto {
      */
     @NotNull
     @FutureOrPresent(message = "Дата бронирования не может быть из прошлого")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime start;
 
     /**
@@ -39,7 +39,6 @@ public class BookingRequestDto {
      */
     @NotNull
     @FutureOrPresent(message = "Дата бронирования не может быть из прошлого")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime end;
 
     /**
