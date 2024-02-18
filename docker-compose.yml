@@ -15,6 +15,7 @@ services:
     build: ./shareIt-server
     image: shareit_server
     container_name: shareIt-server
+
     ports:
       - "9090:9090"
     depends_on:
