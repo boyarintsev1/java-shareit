@@ -26,12 +26,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             nativeQuery = true)
     Page<Booking> findPastBookingsForBooker(Integer userId, LocalDateTime now, Pageable page);
 
-    @Query(value = "SELECT * FROM public.BOOKINGS b WHERE b.booker_id = ?1 and b.start_date >= ?2 " +
+    @Query(value = "SELECT * FROM public.BOOKINGS b WHERE b.booker_id = ?1 and b.start_date > ?2 " +
             "ORDER BY b.start_date DESC",
             nativeQuery = true)
     Page<Booking> findFutureBookingsForBooker(Integer userId, LocalDateTime now, Pageable page);
 
-    @Query(value = "SELECT * FROM public.BOOKINGS b WHERE b.booker_id = ?1 and b.start_date < ?2 and b.end_date > ?3 " +
+    @Query(value = "SELECT * FROM public.BOOKINGS b WHERE b.booker_id = ?1 and b.start_date <= ?2 and b.end_date > ?3 " +
             "ORDER BY b.start_date",
             nativeQuery = true)
     Page<Booking> findCurrentBookingsForBooker(Integer userId, LocalDateTime now1, LocalDateTime now2, Pageable page);
@@ -50,7 +50,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findAllBookingsToOwnerPageable(Integer ownerId, Pageable page);
 
     @Query(value = "SELECT b.*, i.owner_id FROM public.BOOKINGS b INNER JOIN public.ITEMS i ON i.id=b.item_id" +
-            " WHERE i.owner_id = ?1 and b.start_date < ?2 and b.end_date > ?3 ORDER BY b.start_date",
+            " WHERE i.owner_id = ?1 and b.start_date <= ?2 and b.end_date > ?3 ORDER BY b.start_date",
             nativeQuery = true)
     Page<Booking> findCurrentBookingsForOwnerPageable(Integer ownerId, LocalDateTime now1, LocalDateTime now2, Pageable page);
 
@@ -60,7 +60,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findPastBookingsForOwnerPageable(Integer ownerId, LocalDateTime now, Pageable page);
 
     @Query(value = "SELECT b.*, i.owner_id FROM public.BOOKINGS b INNER JOIN public.ITEMS i ON i.id=b.item_id" +
-            " WHERE i.owner_id = ?1 and b.start_date >= ?2 ORDER BY b.start_date DESC",
+            " WHERE i.owner_id = ?1 and b.start_date > ?2 ORDER BY b.start_date DESC",
             nativeQuery = true)
     Page<Booking> findFutureBookingsForOwnerPageable(Integer ownerId, LocalDateTime now, Pageable page);
 

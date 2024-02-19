@@ -34,15 +34,16 @@ public class BookingServiceImpl implements BookingService {
     public Page<Booking> findAllBookingsForBooker(Integer bookerId, State stateEnum, Integer from, Integer size) {
         log.info("Исполняется запрос на получение всех бронирований пользователя.");
         Pageable page = PageRequest.of(from / size, size);
+        LocalDateTime now = LocalDateTime.now();
         switch (stateEnum) {
             case ALL:
                 return bookingRepository.findAllByBookerId(bookerId, page);
             case CURRENT:
-                return bookingRepository.findCurrentBookingsForBooker(bookerId, LocalDateTime.now(), LocalDateTime.now(), page);
+                return bookingRepository.findCurrentBookingsForBooker(bookerId, now, now, page);
             case PAST:
-                return bookingRepository.findPastBookingsForBooker(bookerId, LocalDateTime.now(), page);
+                return bookingRepository.findPastBookingsForBooker(bookerId, now, page);
             case FUTURE:
-                return bookingRepository.findFutureBookingsForBooker(bookerId, LocalDateTime.now(), page);
+                return bookingRepository.findFutureBookingsForBooker(bookerId, now, page);
             case WAITING:
             case REJECTED:
                 String status = String.valueOf(stateEnum);
@@ -56,15 +57,16 @@ public class BookingServiceImpl implements BookingService {
     public Page<Booking> findAllBookingsForOwner(Integer ownerId, State stateEnum, Integer from, Integer size) {
         log.info("Исполняется запрос на получение всех бронирований для владельца.");
         Pageable page = PageRequest.of(from / size, size);
+        LocalDateTime now = LocalDateTime.now();
         switch (stateEnum) {
             case ALL:
                 return bookingRepository.findAllBookingsToOwnerPageable(ownerId, page);
             case CURRENT:
-                return bookingRepository.findCurrentBookingsForOwnerPageable(ownerId, LocalDateTime.now(), LocalDateTime.now(), page);
+                return bookingRepository.findCurrentBookingsForOwnerPageable(ownerId, now, now, page);
             case PAST:
-                return bookingRepository.findPastBookingsForOwnerPageable(ownerId, LocalDateTime.now(), page);
+                return bookingRepository.findPastBookingsForOwnerPageable(ownerId, now, page);
             case FUTURE:
-                return bookingRepository.findFutureBookingsForOwnerPageable(ownerId, LocalDateTime.now(), page);
+                return bookingRepository.findFutureBookingsForOwnerPageable(ownerId, now, page);
             case WAITING:
             case REJECTED:
                 String status = String.valueOf(stateEnum);
@@ -147,12 +149,13 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void validateBookingPatchRequest(Booking booking) {
+        LocalDateTime now = LocalDateTime.now();
         if (booking.getEnd().isBefore(booking.getStart()) || (booking.getEnd().equals(booking.getStart()))) {
             message = "Дата окончания бронирования не может быть ранее его начала или равна ему.";
             log.error(message);
             throw new ValidationException(message, HttpStatus.BAD_REQUEST);
         }
-        if (booking.getStart().isBefore(LocalDateTime.now()) || (booking.getEnd().isBefore(LocalDateTime.now()))) {
+        if (booking.getStart().isBefore(now) || (booking.getEnd().isBefore(now))) {
             message = "Дата бронирования не может быть из прошлого.";
             log.error(message);
             throw new ValidationException(message, HttpStatus.BAD_REQUEST);
