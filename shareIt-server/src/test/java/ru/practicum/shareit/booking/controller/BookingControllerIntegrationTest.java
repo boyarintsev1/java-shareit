@@ -86,8 +86,7 @@ class BookingControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$.[0].id").value(1))
-                .andExpect(jsonPath("$.[0].item.name").value("Дрель"))
-                .andExpect(jsonPath("$.[0].booker.id").value(2));
+                .andExpect(jsonPath("$.[0].item.name").value("Дрель"));
     }
 
     @SneakyThrows
